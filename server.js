@@ -48,7 +48,7 @@ function HandshakeHYBI00(request) {
              * bytes of the handshake, expressed here
              * as they would be seen if interpreted as ASCII
              */
-            data = request.slice(-8, request.length),
+            data = request.slice(-8),
             // md5 hhash
             hash = crypto.createHash('md5');
         // update hash with all values
