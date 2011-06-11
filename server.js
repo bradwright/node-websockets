@@ -72,6 +72,16 @@ function HandshakeHYBI00(request) {
     return false;
 }
 
+// TODO: this should be part of the protocol-version class
+function readData(data) {
+    // this is for protocol 00
+    // text-frame    = %x00 *( UTF8-char ) %xFF
+
+    // lop off first and last character
+    // TODO: this should be error checked
+    return data.slice(1, data.length - 1);
+}
+
 function parseHeaders(headers) {
     // splits a list of headers into key/value pairs
     var parsedHeaders = {};
@@ -107,7 +117,7 @@ var WebsocketServer = net.createServer(function (socket) {
     socket.addListener('data', function (data) {
         // are we connected?
         if (wsConnected) {
-            console.log(data.toString('utf8'));
+            console.log(readData(data.toString('utf8')));
         }
         else {
             var response = HandshakeHYBI00(data.toString('binary'));
