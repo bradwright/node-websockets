@@ -6,7 +6,8 @@
 // Use strict compilation rules - we're not animals
 'use strict';
 
-var net = require('net');
+var net = require('net'),
+    EventEmitter = require('events').EventEmitter;
 
 // import protocol
 var factory = require('./protocols/factory');
@@ -23,12 +24,14 @@ function readData(data) {
 
 var WebsocketServer = net.createServer(function (socket) {
     // listen for connections
-    var wsConnected = false;
+    var wsConnected = false,
+        emitter = new EventEmitter();
 
     socket.addListener('data', function (data) {
         // are we connected?
         if (wsConnected) {
-            console.log(readData(data.toString('utf8')));
+            var message = readData(data.toString('utf8'));
+            emitter.emit('message', message);
         }
         else {
             var response = factory(data.toString('binary'));
@@ -36,9 +39,11 @@ var WebsocketServer = net.createServer(function (socket) {
                 // handshake succeeded, open connection
                 socket.write(response.join('\r\n'), 'binary');
                 wsConnected = true;
+                emitter.emit('open', socket);
             }
             else {
                 // close connection, handshake bad
+                emitter.emit('close', socket);
                 socket.end();
                 return;
             }
