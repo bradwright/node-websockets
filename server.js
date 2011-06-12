@@ -29,7 +29,8 @@ function computeKey(key) {
      */
     var length = parseInt(key.match(/\s/g).length),
         chars = parseInt(key.replace(/[^0-9]/g, ''));
-    return (chars / length);
+    // convert to a 32 bit number
+    return bigEndian((chars / length));
 }
 
 // protocol 00
@@ -52,8 +53,8 @@ function HandshakeHYBI00(request) {
             // md5 hhash
             hash = crypto.createHash('md5');
         // update hash with all values
-        hash.update(bigEndian(key1));
-        hash.update(bigEndian(key2));
+        hash.update(key1);
+        hash.update(key2);
         hash.update(data);
         // TODO: make this a template maybe
         var response = [
