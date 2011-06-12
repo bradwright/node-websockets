@@ -9,7 +9,7 @@
 var net = require('net');
 
 // import protocol
-var protoFactory = require('./protocols/factory.js').factory;
+var factory = require('./protocols/factory');
 
 // TODO: this should be part of the protocol-version class
 function readData(data) {
@@ -31,7 +31,7 @@ var WebsocketServer = net.createServer(function (socket) {
             console.log(readData(data.toString('utf8')));
         }
         else {
-            var response = protoFactory(data.toString('binary'));
+            var response = factory(data.toString('binary'));
             if (response) {
                 // handshake succeeded, open connection
                 socket.write(response.join('\r\n'), 'binary');
