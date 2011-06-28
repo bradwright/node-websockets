@@ -24,21 +24,20 @@ function readData(data) {
 
 var WebsocketServer = net.createServer(function(socket) {
     // listen for connections
-    var wsConnected = false,
-        emitter = new EventEmitter();
+    var emitter = new EventEmitter(),
+        connection = null;
 
     socket.addListener('data', function(data) {
         // are we connected?
-        if (wsConnected) {
-            var message = readData(data.toString('utf8'));
+        if (connection !== null) {
+            var message = connection.parseMessage(data.toString('utf8'));
             emitter.emit('message', message);
         }
         else {
-            var response = factory(data.toString('binary'));
-            if (response) {
+            connection = factory(data.toString('binary'));
+            if (connection) {
                 // handshake succeeded, open connection
-                socket.write(response.join('\r\n'), 'binary');
-                wsConnected = true;
+                socket.write(connection.join('\r\n'), 'binary');
                 emitter.emit('open', socket);
             }
             else {
