@@ -22,12 +22,12 @@ function readData(data) {
     return data.slice(1, data.length - 1);
 }
 
-var WebsocketServer = net.createServer(function (socket) {
+var WebsocketServer = net.createServer(function(socket) {
     // listen for connections
     var wsConnected = false,
         emitter = new EventEmitter();
 
-    socket.addListener('data', function (data) {
+    socket.addListener('data', function(data) {
         // are we connected?
         if (wsConnected) {
             var message = readData(data.toString('utf8'));
